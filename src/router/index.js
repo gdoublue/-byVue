@@ -2,6 +2,8 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Login from '@/components/Login.vue'
 import Home from '@/components/Home.vue'
+import HomeWelcom from '../components/HomeWelcom.vue'
+import Users from '../components/user/Users.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -17,8 +19,13 @@ const routes = [
   },
   {
     path: '/home',
-    component: Home
-  },
+    component: Home,
+    redirect: '/welcome',
+    children: [
+      { path: '/welcome', component: HomeWelcom },
+      { path: '/users', component: Users }
+    ]
+  }
 ]
 
 const router = new VueRouter({
@@ -29,10 +36,10 @@ const router = new VueRouter({
 /*to 将要访问的路径
 from 哪个路径来的
 next 是个放行函数*/
-router.beforeEach((to,from,next)=>{
-  if(to.path=== '/login')  return next()
-  const tokenStr= window.sessionStorage.getItem('token')
-  if(!tokenStr)return next('/login')
+router.beforeEach((to, from, next) => {
+  if (to.path === '/login') return next()
+  const tokenStr = window.sessionStorage.getItem('token')
+  if (!tokenStr) return next('/login')
   next()
 })
 

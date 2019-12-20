@@ -25,44 +25,42 @@
 </template>
 
 <script>
-    export default {
-        data(){
-            return {
-                loginForm:{
-                    username:'admin',
-                    password:'123456',
+export default {
+  data () {
+    return {
+      loginForm: {
+        username: 'admin',
+        password: '123456'
 
-                },
-                loginFormRules:{
-                    username: [
-                        { required: true, message: '请输入登录用户名', trigger: 'blur' },
-                        { min: 4, max: 15, message: '长度在 4 到 15 个字符', trigger: 'blur' }
-                    ],
-                    password: [
-                        { required: true, message: '请输入密码', trigger: 'blur' },
-                    ]
-                }
-            }
-
-        },
-        methods:{
-            resetLoginForm(){
-               this.$refs.loginFormRef.resetFields()
-            },
-             login(){
-                this.$refs.loginFormRef.validate(async (valid)=>{
-                    if(!valid)  return;
-                  var {data:res}= await this.$http.post('login',this.loginForm)
-                    if(res.meta.status !==200)
-                        return this.$message.error(res.meta.msg)
-                    this.$message.success(res.meta.msg)
-                    window.sessionStorage.setItem('token',res.data.token)
-                    this.$router.push('/home')
-                })
-            }
-        }
-
+      },
+      loginFormRules: {
+        username: [
+          { required: true, message: '请输入登录用户名', trigger: 'blur' },
+          { min: 4, max: 15, message: '长度在 4 到 15 个字符', trigger: 'blur' }
+        ],
+        password: [
+          { required: true, message: '请输入密码', trigger: 'blur' }
+        ]
+      }
     }
+  },
+  methods: {
+    resetLoginForm () {
+      this.$refs.loginFormRef.resetFields()
+    },
+    login () {
+      this.$refs.loginFormRef.validate(async (valid) => {
+        if(!valid) return
+        var { data: res }= await this.$http.post('login', this.loginForm)
+        if(res.meta.status !==200) { return this.$message.error(res.meta.msg) }
+        this.$message.success(res.meta.msg)
+        window.sessionStorage.setItem('token', res.data.token)
+        this.$router.push('/home')
+      })
+    }
+  }
+
+}
 </script>
 
 <style lang="less" scoped>
