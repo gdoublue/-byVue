@@ -80,8 +80,32 @@
       >
       </el-pagination>
       <!--对话框-->
-      <el-dialog title="提示" :visible.sync="dialogVisible" width="30%">
-        <span>这是一段信息</span>
+      <el-dialog
+        title="添加用户"
+        :visible.sync="dialogVisible"
+        width="40%"
+        @close="addFormClosed"
+      >
+        <!--对话框主要表单-->
+        <el-form
+          :model="addUserForm"
+          :rules="addRules"
+          ref="addUserForm"
+          label-width="100px"
+        >
+          <el-form-item label="用户名" prop="username">
+            <el-input v-model="addUserForm.username"></el-input>
+          </el-form-item>
+          <el-form-item label="密码" prop="password">
+            <el-input v-model="addUserForm.password"></el-input>
+          </el-form-item>
+          <el-form-item label="邮箱" prop="email">
+            <el-input v-model="addUserForm.email"></el-input>
+          </el-form-item>
+          <el-form-item label="手机号" prop="mobile">
+            <el-input v-model="addUserForm.mobile"></el-input>
+          </el-form-item>
+        </el-form>
         <span slot="footer" class="dialog-footer">
           <el-button @click="dialogVisible = false">取 消</el-button>
           <el-button type="primary" @click="dialogVisible = false"
@@ -97,6 +121,22 @@
 export default {
   name: 'Users',
   data() {
+    /*自定义验证邮箱*/
+    var checkEmail = (rule, value, callback) => {
+      const regEmail = /^([a-zA-Z]|[0-9])(\w|-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/
+      if (regEmail.test(value)) {
+        return callback
+      }
+      callback(new Error('请输入合法邮箱'))
+    }
+    /*自定义手机号验证规则*/
+    var checkMobile = (rule, value, callback) => {
+      const regEmail = /^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}$/
+      if (regEmail.test(value)) {
+        return callback
+      }
+      callback(new Error('请输入正确的手机号'))
+    }
     return {
       //获取参数对象
       queryInfo: {
@@ -106,7 +146,32 @@ export default {
       },
       userlist: [],
       total: 0,
-      dialogVisible: false
+      dialogVisible: false,
+      addUserForm: {
+        username: '',
+        password: '',
+        mobile: '',
+        email: ''
+      },
+
+      addRules: {
+        username: [
+          { required: true, message: '请输入用户名称', trigger: 'blur' },
+          { min: 3, max: 5, message: '长度在 3 到 15 个字符', trigger: 'blur' }
+        ],
+        password: [
+          { required: true, message: '请输入用户密码', trigger: 'blur' },
+          { min: 3, max: 5, message: '长度在 3 到 15 个字符', trigger: 'blur' }
+        ],
+        email: [
+          { required: true, message: '请输入邮箱', trigger: 'blur' },
+          { validator: checkEmail, trigger: 'blur' }
+        ],
+        mobile: [
+          { required: true, message: '请输入手机号', trigger: 'blur' },
+          { validator: checkMobile, trigger: 'blur' }
+        ]
+      }
     }
   },
   created() {
@@ -141,6 +206,10 @@ export default {
         return this.$message.error('更改状态失败')
       }
       this.$message.success(res.meta.msg)
+    },
+    /*关闭对话框后清除表单内容个错误提示*/
+    addFormClosed() {
+      this.$refs.addUserForm.resetFields()
     }
   }
 }
