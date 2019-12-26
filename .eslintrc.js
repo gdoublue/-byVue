@@ -11,7 +11,8 @@ module.exports = {
     'keyword-spacing': 0,
     'spaced-comment': 0,
     'space-before-function-paren': 0,
-    'no-unused-vars': 0
+    'no-unused-vars': 0,
+    'standard/computed-property-even-spacing': 0
   },
   parserOptions: {
     parser: 'babel-eslint'
