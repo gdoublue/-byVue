@@ -172,6 +172,7 @@ export default {
         return this.$message.error('获取商品分类列表失败')
       }
       this.catelist = res.data.result
+
       this.total = res.data.total
     },
     handleSizeChange(newSize) {
@@ -227,6 +228,7 @@ export default {
       this.selectedKeys = []
       this.addClassForm.cat_pid = 0
       this.addClassForm.cat_level = 0
+      this.ParentCateList = []
     }
   }
 }
