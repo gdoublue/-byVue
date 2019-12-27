@@ -40,9 +40,27 @@
               <template v-slot="scope">
                 <el-tag
                   closable
+                  @close="handleCloseTag(i, scope.row)"
                   v-for="(item, i) in scope.row.attr_vals"
                   :key="i"
                   >{{ item }}</el-tag
+                >
+                <el-input
+                  class="input-new-tag"
+                  v-if="scope.row.inputVisible"
+                  v-model="scope.row.inputValue"
+                  ref="saveTagInput"
+                  size="small"
+                  @keyup.enter.native="handleInputConfirm(scope.row)"
+                  @blur="handleInputConfirm(scope.row)"
+                >
+                </el-input>
+                <el-button
+                  v-else
+                  class="button-new-tag"
+                  size="small"
+                  @click="showTabInput(scope.row)"
+                  >+ New Tag</el-button
                 >
               </template>
             </el-table-column>
@@ -84,9 +102,27 @@
               <template v-slot="scope">
                 <el-tag
                   closable
+                  @close="handleCloseTag(i, scope.row)"
                   v-for="(item, i) in scope.row.attr_vals"
                   :key="i"
                   >{{ item }}</el-tag
+                >
+                <el-input
+                  class="input-new-tag"
+                  v-if="scope.row.inputVisible"
+                  v-model="scope.row.inputValue"
+                  ref="saveTagInput"
+                  size="small"
+                  @keyup.enter.native="handleInputConfirm(scope.row)"
+                  @blur="handleInputConfirm(scope.row)"
+                >
+                </el-input>
+                <el-button
+                  v-else
+                  class="button-new-tag"
+                  size="small"
+                  @click="showTabInput(scope.row)"
+                  >+ New Tag</el-button
                 >
               </template>
             </el-table-column>
@@ -195,7 +231,9 @@ export default {
           { required: true, message: '请输入参数名称', trigger: 'blur' }
         ]
       },
-      editDialogVisible: false
+      editDialogVisible: false,
+      tabInputVisible: false,
+      tabInputValue: ''
     }
   },
   created() {
@@ -213,12 +251,15 @@ export default {
     },
     //级联选择框改变会触发的函数
     handleChange() {
-      if (this.selectedCateKeys.length !== 3) {
-        return this.$message.error('只可设置第三级分类参数')
-      }
+      this.manyTablesData = []
+      this.onlyTablesData = []
       this.getParamsData()
     },
     async getParamsData() {
+      if (this.selectedCateKeys.length !== 3) {
+        this.selectedCateKeys = []
+        return this.$message.error('只可设置第三级分类参数')
+      }
       const { data: res } = await this.$http.get(
         `categories/${this.cateId}/attributes`,
         {
@@ -230,6 +271,9 @@ export default {
       }
       res.data.forEach(item => {
         item.attr_vals = item.attr_vals ? item.attr_vals.split(' ') : []
+        /*为每一列参数单独设置标签输入属性和值*/
+        item.inputVisible = false
+        item.inputValue = ''
       })
       if (this.TabsActiveName === 'many') {
         this.manyTablesData = res.data
@@ -324,6 +368,49 @@ export default {
             message: '已取消删除'
           })
         })
+    },
+    /*标签添加*/
+    handleInputConfirm(row) {
+      if (row.inputValue.trim().length === 0) {
+        row.inputValue = ''
+        row.inputVisible = false
+        return
+      }
+      /*如果输入不为空，就添加到数组*/
+      row.attr_vals.push(row.inputValue.trim())
+      row.inputValue = ''
+      row.inputVisible = false
+      this.saveAttrVals(row)
+    },
+    //保存tag到数据库
+    async saveAttrVals(row) {
+      const { data: res } = await this.$http.put(
+        `categories/${this.cateId}/attributes/${row.attr_id}`,
+        {
+          attr_name: row.attr_name,
+          attr_sel: row.attr_sel,
+          attr_vals: row.attr_vals.join(' ')
+        }
+      )
+      if (res.meta.status !== 200) {
+        return this.$message.error('修改失败了')
+      }
+      this.$message.success('修改成功了')
+    },
+    showTabInput(row) {
+      row.inputVisible = true
+      /*让input自动获取焦点
+       * $nextTick,当页面被渲染后，才会执行回调函数的代码，即等button变成input后再对焦，不然出错
+       * */
+      this.$nextTick(_ => {
+        this.$refs.saveTagInput.$refs.input.focus()
+      })
+    },
+    //删除tag标签
+    handleCloseTag(iTag, row) {
+      row.attr_vals.splice(iTag, 1)
+      console.log(iTag)
+      this.saveAttrVals(row)
     }
   },
   computed: {
@@ -355,5 +442,11 @@ export default {
 }
 .firstCascader {
   margin: 15px 10px;
+}
+.el-tag {
+  margin: 2px 5px;
+}
+.input-new-tag {
+  width: 200px;
 }
 </style>
