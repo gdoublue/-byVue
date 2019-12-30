@@ -115,6 +115,7 @@
 </template>
 
 <script>
+import _ from 'loadsh'
 export default {
   data() {
     return {
@@ -126,7 +127,8 @@ export default {
         goods_weight: '',
         goods_introduce: '',
         goods_cat: [],
-        pics: []
+        pics: [],
+        attrs: []
       },
       addFormRules: {
         goods_name: [{ required: true, message: '必填项', trigger: 'blur' }],
@@ -232,11 +234,34 @@ export default {
       }
     },
     addGoodForm() {
-      this.$refs.addFormRef.validate(valid => {
+      this.$refs.addFormRef.validate(async valid => {
         if (!valid) {
           return this.$message.error('请填写完成必要商品信息')
         }
-        return this.$message.success('合法信息')
+        /*深拷贝*/
+        let form = _.cloneDeep(this.addForm)
+        form.goods_cat = form.goods_cat.join(',')
+        this.manyTablesData.forEach(item => {
+          const newInfo = {
+            attr_id: item.attr_id,
+            attr_value: item.attr_vals.join(' ')
+          }
+          form.attrs.push(newInfo)
+        })
+        this.onlyTablesData.forEach(item => {
+          let newInfo = {
+            attr_id: item.attr_id,
+            attr_value: item.attr_vals
+          }
+          form.attrs.push(newInfo)
+        })
+        console.log(form)
+        const { data: res } = await this.$http.post('goods', form)
+        if (res.meta.status !== 201) {
+          this.$message.error('添加商品失败了')
+        }
+        this.$message.success('添加商品成功')
+        this.$router.push('/goods')
       })
     }
   },
