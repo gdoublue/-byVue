@@ -21,3 +21,7 @@ body,
 .el-steps {
   margin: 15px 0;
 }
+/*富文本编辑器样式*/
+.ql-editor {
+  min-height: 300px;
+}

@@ -93,7 +93,15 @@
           </el-tab-pane>
           <el-tab-pane label="商品内容" name="4"
             ><el-form-item label="商品介绍" prop="goods_name">
-              <el-input v-model="addForm.goods_introduce"></el-input>
+              <!--富文本编辑器-->
+              <quill-editor
+                v-model="addForm.goods_introduce"
+                ref="myQuillEditor"
+              >
+              </quill-editor>
+              <el-button type="primary" class="addBtn" @click="addGoodForm"
+                >添加商品</el-button
+              >
             </el-form-item>
           </el-tab-pane>
         </el-tabs>
@@ -222,6 +230,14 @@ export default {
         }
         this.onlyTablesData = res.data
       }
+    },
+    addGoodForm() {
+      this.$refs.addFormRef.validate(valid => {
+        if (!valid) {
+          return this.$message.error('请填写完成必要商品信息')
+        }
+        return this.$message.success('合法信息')
+      })
     }
   },
   computed: {
@@ -239,5 +255,8 @@ export default {
 <style lang="less" scoped>
 .preViewImg {
   width: 100%;
+}
+.addBtn {
+  margin: 15px 10px;
 }
 </style>
