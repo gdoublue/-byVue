@@ -58,33 +58,83 @@
                 type="primary"
                 size="mini"
                 icon="el-icon-edit"
+                @click="showAddressBox"
               ></el-button>
               <el-button
-                type="danger"
+                type="success"
                 size="mini"
-                icon="el-icon-delete"
+                icon="el-icon-location-information"
+                @click="showProgressBox"
               ></el-button>
             </template>
           </el-table-column>
         </el-table>
       </el-row>
-    </el-card>
 
-    <el-pagination
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-      :current-page="queryInfo.pagenum"
-      :page-sizes="[10, 15, 20, 30]"
-      :page-size="queryInfo.pagesize"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="total"
-      background
-    >
-    </el-pagination>
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="queryInfo.pagenum"
+        :page-sizes="[10, 15, 20, 30]"
+        :page-size="queryInfo.pagesize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
+        background
+      >
+      </el-pagination>
+      <el-dialog
+        title="添加分类"
+        :visible.sync="addressDialogVisible"
+        width="50%"
+        @close="addressDialogClosed"
+      >
+        <el-form
+          :model="addressForm"
+          :rules="addressFormRules"
+          ref="addressFormRef"
+          label-width="100px"
+        >
+          <el-form-item label="省市区/县" prop="address1">
+            <el-cascader
+              :options="citydata"
+              v-model="addressForm.address1"
+              clearable
+            ></el-cascader>
+          </el-form-item>
+          <el-form-item label="详细地址" prop="address2">
+            <el-input v-model="addressForm.address2"></el-input>
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="addressDialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="addressDialogVisible = false"
+            >确 定</el-button
+          >
+        </span>
+      </el-dialog>
+      <!--物流对话框-->
+      <el-dialog
+        title="物流信息"
+        :visible.sync="progressDialogVisible"
+        width="50%"
+        @close="progressDialogClosed"
+      >
+        <el-timeline :reverse="false">
+          <el-timeline-item
+            v-for="(activity, index) in progressInfo"
+            :key="index"
+            :timestamp="activity.time"
+          >
+            {{ activity.context }}
+          </el-timeline-item>
+        </el-timeline>
+      </el-dialog>
+    </el-card>
   </div>
 </template>
 
 <script>
+import citydata from './citydata.js'
 export default {
   data() {
     return {
@@ -94,7 +144,23 @@ export default {
         pagesize: 10
       },
       total: 0,
-      orderList: []
+      orderList: [],
+      addressDialogVisible: false,
+      progressDialogVisible: false,
+      addressForm: {
+        address1: [],
+        address2: ''
+      },
+      addressFormRules: {
+        address1: [
+          { required: true, message: '请选择省市区/县', trigger: 'blur' }
+        ],
+        address2: [
+          { required: true, message: '请输入详细地址', trigger: 'blur' }
+        ]
+      },
+      citydata: citydata,
+      progressInfo: []
     }
   },
   created() {
@@ -108,7 +174,6 @@ export default {
       if (res.meta.status !== 200) {
         return this.$message.error('获取订单列表失败')
       }
-      console.log(res)
       this.total = res.data.total
       this.orderList = res.data.goods
     },
@@ -119,9 +184,33 @@ export default {
     handleCurrentChange(newPage) {
       this.queryInfo.pagenum = newPage
       this.getOrdersList()
+    },
+    showAddressBox() {
+      this.addressDialogVisible = true
+    },
+    addressDialogClosed() {
+      this.$refs.addressFormRef.resetFields()
+      this.addressForm.address1 = []
+      this.addressForm.address2 = ''
+    },
+    async showProgressBox() {
+      const { data: res } = await this.$http.get('/kuaidi/1106975712662')
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取物流信息失败')
+      }
+      this.progressInfo = res.data
+      console.log(this.progressInfo)
+      this.progressDialogVisible = true
+    },
+    progressDialogClosed() {
+      console.log('progressDialogClosed')
     }
   }
 }
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.el-cascader {
+  width: 100%;
+}
+</style>
