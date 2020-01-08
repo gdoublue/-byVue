@@ -8,45 +8,20 @@
     <el-card>
       <el-row>
         <el-col :span="8">
-          <el-input
-            placeholder="请输入内容"
-            v-model="queryInfo.query"
-            clearable
-            @clear="getOrdersList"
-          >
-            <el-button
-              slot="append"
-              icon="el-icon-search"
-              @click="getOrdersList"
-            ></el-button>
+          <el-input placeholder="请输入内容" v-model="queryInfo.query" clearable @clear="getOrdersList">
+            <el-button slot="append" icon="el-icon-search" @click="getOrdersList"></el-button>
           </el-input>
         </el-col>
         <el-table :data="orderList" border stripe height="73vh">
           <el-table-column type="index"></el-table-column>
-          <el-table-column
-            label="订单编号"
-            prop="order_number"
-          ></el-table-column>
-          <el-table-column
-            label="订单价格"
-            prop="order_price"
-            width="80px"
-          ></el-table-column>
+          <el-table-column label="订单编号" prop="order_number"></el-table-column>
+          <el-table-column label="订单价格" prop="order_price" width="80px"></el-table-column>
           <el-table-column label="是否付款" prop="pay_status" width="80px">
             <template v-slot="scope">
-              <el-tag
-                type="success"
-                size="mini"
-                v-if="scope.row.pay_status === '1'"
-                >已付款</el-tag
-              >
+              <el-tag type="success" size="mini" v-if="scope.row.pay_status === '1'">已付款</el-tag>
               <el-tag type="error" v-else size="mini">未付款</el-tag>
             </template> </el-table-column
-          ><el-table-column
-            label="是否发货"
-            prop="is_send"
-            width="50px"
-          ></el-table-column
+          ><el-table-column label="是否发货" prop="is_send" width="50px"></el-table-column
           ><el-table-column label="下单时间" prop="create_time">
             <template v-slot="scope">
               {{ scope.row.create_time | dateFormat }}
@@ -54,12 +29,7 @@
           </el-table-column>
           <el-table-column label="操作" width="130px">
             <template v-slot="scope">
-              <el-button
-                type="primary"
-                size="mini"
-                icon="el-icon-edit"
-                @click="showAddressBox"
-              ></el-button>
+              <el-button type="primary" size="mini" icon="el-icon-edit" @click="showAddressBox"></el-button>
               <el-button
                 type="success"
                 size="mini"
@@ -88,18 +58,9 @@
         width="50%"
         @close="addressDialogClosed"
       >
-        <el-form
-          :model="addressForm"
-          :rules="addressFormRules"
-          ref="addressFormRef"
-          label-width="100px"
-        >
+        <el-form :model="addressForm" :rules="addressFormRules" ref="addressFormRef" label-width="100px">
           <el-form-item label="省市区/县" prop="address1">
-            <el-cascader
-              :options="citydata"
-              v-model="addressForm.address1"
-              clearable
-            ></el-cascader>
+            <el-cascader :options="citydata" v-model="addressForm.address1" clearable></el-cascader>
           </el-form-item>
           <el-form-item label="详细地址" prop="address2">
             <el-input v-model="addressForm.address2"></el-input>
@@ -107,9 +68,7 @@
         </el-form>
         <span slot="footer" class="dialog-footer">
           <el-button @click="addressDialogVisible = false">取 消</el-button>
-          <el-button type="primary" @click="addressDialogVisible = false"
-            >确 定</el-button
-          >
+          <el-button type="primary" @click="addressDialogVisible = false">确 定</el-button>
         </span>
       </el-dialog>
       <!--物流对话框-->
@@ -120,11 +79,7 @@
         @close="progressDialogClosed"
       >
         <el-timeline :reverse="false">
-          <el-timeline-item
-            v-for="(activity, index) in progressInfo"
-            :key="index"
-            :timestamp="activity.time"
-          >
+          <el-timeline-item v-for="(activity, index) in progressInfo" :key="index" :timestamp="activity.time">
             {{ activity.context }}
           </el-timeline-item>
         </el-timeline>
@@ -152,12 +107,8 @@ export default {
         address2: ''
       },
       addressFormRules: {
-        address1: [
-          { required: true, message: '请选择省市区/县', trigger: 'blur' }
-        ],
-        address2: [
-          { required: true, message: '请输入详细地址', trigger: 'blur' }
-        ]
+        address1: [{ required: true, message: '请选择省市区/县', trigger: 'blur' }],
+        address2: [{ required: true, message: '请输入详细地址', trigger: 'blur' }]
       },
       citydata: citydata,
       progressInfo: []
@@ -199,12 +150,9 @@ export default {
         return this.$message.error('获取物流信息失败')
       }
       this.progressInfo = res.data
-      console.log(this.progressInfo)
       this.progressDialogVisible = true
     },
-    progressDialogClosed() {
-      console.log('progressDialogClosed')
-    }
+    progressDialogClosed() {}
   }
 }
 </script>

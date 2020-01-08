@@ -55,27 +55,14 @@
             </el-form-item>
           </el-tab-pane>
           <el-tab-pane label="商品参数" name="1">
-            <el-form-item
-              :label="item.attr_name"
-              v-for="item in manyTablesData"
-              :key="item.attr_id"
-            >
+            <el-form-item :label="item.attr_name" v-for="item in manyTablesData" :key="item.attr_id">
               <el-checkbox-group v-model="item.attr_vals">
-                <el-checkbox
-                  :label="cb"
-                  v-for="(cb, i) in item.attr_vals"
-                  :key="i"
-                  border
-                ></el-checkbox>
+                <el-checkbox :label="cb" v-for="(cb, i) in item.attr_vals" :key="i" border></el-checkbox>
               </el-checkbox-group>
             </el-form-item>
           </el-tab-pane>
           <el-tab-pane label="商品属性" name="2">
-            <el-form-item
-              :label="item.attr_name"
-              v-for="item in onlyTablesData"
-              :key="item.attr_id"
-            >
+            <el-form-item :label="item.attr_name" v-for="item in onlyTablesData" :key="item.attr_id">
               <el-input v-model="item.attr_vals"></el-input>
             </el-form-item>
           </el-tab-pane>
@@ -94,14 +81,8 @@
           <el-tab-pane label="商品内容" name="4"
             ><el-form-item label="商品介绍" prop="goods_name">
               <!--富文本编辑器-->
-              <quill-editor
-                v-model="addForm.goods_introduce"
-                ref="myQuillEditor"
-              >
-              </quill-editor>
-              <el-button type="primary" class="addBtn" @click="addGoodForm"
-                >添加商品</el-button
-              >
+              <quill-editor v-model="addForm.goods_introduce" ref="myQuillEditor"> </quill-editor>
+              <el-button type="primary" class="addBtn" @click="addGoodForm">添加商品</el-button>
             </el-form-item>
           </el-tab-pane>
         </el-tabs>
@@ -193,24 +174,19 @@ export default {
 
       const picInfo = { pic: res.data.tmp_path }
       this.addForm.pics.push(picInfo)
-      console.log(this.addForm.pics)
     },
     handleRemove(file) {
       //用文件的临时路径，查找索引值
       const filePath = file.response.data.tmp_path
       const i = this.addForm.pics.findIndex(x => x.pic === filePath)
       this.addForm.pics.splice(i, 1)
-      console.log(this.addForm.pics)
     },
     /*点击tabs时激活，以此可以动态获取参数*/
     async tabClicked() {
       if (this.activeStep === '1') {
-        const { data: res } = await this.$http.get(
-          `categories/${this.cateId}/attributes`,
-          {
-            params: { sel: 'many' }
-          }
-        )
+        const { data: res } = await this.$http.get(`categories/${this.cateId}/attributes`, {
+          params: { sel: 'many' }
+        })
         if (res.meta.status !== 200) {
           this.$message.error('获取商品分类的动态属性失败')
         }
@@ -221,12 +197,9 @@ export default {
         this.manyTablesData = res.data
       }
       if (this.activeStep === '2') {
-        const { data: res } = await this.$http.get(
-          `categories/${this.cateId}/attributes`,
-          {
-            params: { sel: 'only' }
-          }
-        )
+        const { data: res } = await this.$http.get(`categories/${this.cateId}/attributes`, {
+          params: { sel: 'only' }
+        })
         if (res.meta.status !== 200) {
           this.$message.error('获取商品分类的静态属性失败')
         }
@@ -255,7 +228,6 @@ export default {
           }
           form.attrs.push(newInfo)
         })
-        console.log(form)
         const { data: res } = await this.$http.post('goods', form)
         if (res.meta.status !== 201) {
           this.$message.error('添加商品失败了')

@@ -28,11 +28,7 @@
       </el-row>
       <el-tabs v-model="TabsActiveName" @tab-click="TabsHandleClick">
         <el-tab-pane label="动态参数" name="many">
-          <el-button
-            type="primary"
-            size="mini"
-            :disabled="isBtnDisable"
-            @click="addDialogBtn"
+          <el-button type="primary" size="mini" :disabled="isBtnDisable" @click="addDialogBtn"
             >添加参数</el-button
           >
           <el-table :data="manyTablesData" border stripe>
@@ -55,20 +51,13 @@
                   @blur="handleInputConfirm(scope.row)"
                 >
                 </el-input>
-                <el-button
-                  v-else
-                  class="button-new-tag"
-                  size="small"
-                  @click="showTabInput(scope.row)"
+                <el-button v-else class="button-new-tag" size="small" @click="showTabInput(scope.row)"
                   >+ New Tag</el-button
                 >
               </template>
             </el-table-column>
             <el-table-column type="index"></el-table-column>
-            <el-table-column
-              label="参数名称"
-              prop="attr_name"
-            ></el-table-column>
+            <el-table-column label="参数名称" prop="attr_name"></el-table-column>
             <el-table-column label="操作">
               <template v-slot="scope">
                 <el-button
@@ -90,11 +79,7 @@
           </el-table>
         </el-tab-pane>
         <el-tab-pane label="静态属性" name="only">
-          <el-button
-            type="primary"
-            size="mini"
-            :disabled="isBtnDisable"
-            @click="addDialogBtn"
+          <el-button type="primary" size="mini" :disabled="isBtnDisable" @click="addDialogBtn"
             >添加属性</el-button
           >
           <el-table :data="onlyTablesData" border stripe>
@@ -117,20 +102,13 @@
                   @blur="handleInputConfirm(scope.row)"
                 >
                 </el-input>
-                <el-button
-                  v-else
-                  class="button-new-tag"
-                  size="small"
-                  @click="showTabInput(scope.row)"
+                <el-button v-else class="button-new-tag" size="small" @click="showTabInput(scope.row)"
                   >+ New Tag</el-button
                 >
               </template>
             </el-table-column>
             <el-table-column type="index"></el-table-column>
-            <el-table-column
-              label="属性名称"
-              prop="attr_name"
-            ></el-table-column>
+            <el-table-column label="属性名称" prop="attr_name"></el-table-column>
             <el-table-column label="操作">
               <template v-slot="scope">
                 <el-button
@@ -159,12 +137,7 @@
       width="50%"
       @close="addDialogClosed"
     >
-      <el-form
-        :model="addForm"
-        :rules="addFormRules"
-        ref="addFormRef"
-        label-width="100px"
-      >
+      <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="100px">
         <el-form-item :label="titleText" prop="attr_name">
           <el-input v-model="addForm.attr_name"></el-input>
         </el-form-item>
@@ -181,12 +154,7 @@
       width="50%"
       @close="editDialogClosed"
     >
-      <el-form
-        :model="editForm"
-        :rules="editFormRules"
-        ref="editFormRef"
-        label-width="100px"
-      >
+      <el-form :model="editForm" :rules="editFormRules" ref="editFormRef" label-width="100px">
         <el-form-item :label="titleText" prop="attr_name">
           <el-input v-model="editForm.attr_name"></el-input>
         </el-form-item>
@@ -222,14 +190,10 @@ export default {
         attr_name: ''
       },
       addFormRules: {
-        attr_name: [
-          { required: true, message: '请输入参数名称', trigger: 'blur' }
-        ]
+        attr_name: [{ required: true, message: '请输入参数名称', trigger: 'blur' }]
       },
       editFormRules: {
-        attr_name: [
-          { required: true, message: '请输入参数名称', trigger: 'blur' }
-        ]
+        attr_name: [{ required: true, message: '请输入参数名称', trigger: 'blur' }]
       },
       editDialogVisible: false,
       tabInputVisible: false,
@@ -260,12 +224,9 @@ export default {
         this.selectedCateKeys = []
         return this.$message.error('只可设置第三级分类参数')
       }
-      const { data: res } = await this.$http.get(
-        `categories/${this.cateId}/attributes`,
-        {
-          params: { sel: this.TabsActiveName }
-        }
-      )
+      const { data: res } = await this.$http.get(`categories/${this.cateId}/attributes`, {
+        params: { sel: this.TabsActiveName }
+      })
       if (res.meta.status !== 200) {
         return this.$message.error('获取参数失败')
       }
@@ -296,13 +257,10 @@ export default {
     addParams() {
       this.$refs.addFormRef.validate(async valid => {
         if (!valid) return
-        const { data: res } = await this.$http.post(
-          `categories/${this.cateId}/attributes`,
-          {
-            attr_name: this.addForm.attr_name,
-            attr_sel: this.TabsActiveName
-          }
-        )
+        const { data: res } = await this.$http.post(`categories/${this.cateId}/attributes`, {
+          attr_name: this.addForm.attr_name,
+          attr_sel: this.TabsActiveName
+        })
         if (res.meta.status !== 201) {
           this.$message.error('添加参数失败了')
         }
@@ -312,12 +270,9 @@ export default {
       })
     },
     async showEditDialog(attrId) {
-      const {
-        data: res
-      } = await this.$http.get(
-        `categories/${this.cateId}/attributes/${attrId}`,
-        { attr_sel: this.TabsActiveName }
-      )
+      const { data: res } = await this.$http.get(`categories/${this.cateId}/attributes/${attrId}`, {
+        attr_sel: this.TabsActiveName
+      })
       if (res.meta.status !== 200) {
         return this.$message.error('获取参数信息失败')
       }
@@ -349,9 +304,7 @@ export default {
         type: 'warning'
       })
         .then(async () => {
-          const { data: res } = await this.$http.delete(
-            `categories/${this.cateId}/attributes/${attrId}`
-          )
+          const { data: res } = await this.$http.delete(`categories/${this.cateId}/attributes/${attrId}`)
           if (res.meta.status !== 200) {
             return this.$message.error('删除参数失败')
           }
@@ -384,14 +337,11 @@ export default {
     },
     //保存tag到数据库
     async saveAttrVals(row) {
-      const { data: res } = await this.$http.put(
-        `categories/${this.cateId}/attributes/${row.attr_id}`,
-        {
-          attr_name: row.attr_name,
-          attr_sel: row.attr_sel,
-          attr_vals: row.attr_vals.join(' ')
-        }
-      )
+      const { data: res } = await this.$http.put(`categories/${this.cateId}/attributes/${row.attr_id}`, {
+        attr_name: row.attr_name,
+        attr_sel: row.attr_sel,
+        attr_vals: row.attr_vals.join(' ')
+      })
       if (res.meta.status !== 200) {
         return this.$message.error('修改失败了')
       }
@@ -409,7 +359,6 @@ export default {
     //删除tag标签
     handleCloseTag(iTag, row) {
       row.attr_vals.splice(iTag, 1)
-      console.log(iTag)
       this.saveAttrVals(row)
     }
   },
